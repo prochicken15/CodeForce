@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+#define MAX 1000000
+using namespace std;
+
+const long long oo = 1e9;
+
+long long M, N;
+long long dist[MAX];
+long long ways[MAX];
+
+vector<pair<long long, long long>> adj[MAX];
+
+void dijkstra(long long S){
+	for(long long i=1; i<=N; ++i){
+		dist[i] = oo;
+	}
+	priority_queue<pair<long long, long long>, vector<pair<long long, long long>>, greater<pair<long long, long long>>> Q;
+	Q.push({S, 0});
+	dist[S] = 0;
+    ways[S] = 1;
+	while(!Q.empty()){
+		long long u = Q.top().first;
+		long long du = Q.top().second;
+		Q.pop();
+		if(dist[u] != du) continue;
+		for(auto x : adj[u]){
+			long long v = x.first;
+			long long uv = x.second;
+			if(dist[v] > du + uv){
+				dist[v] = du + uv;
+				Q.push({v, dist[v]});
+                ways[v] = ways[u];
+			}
+            else if(dist[v] == du + uv){
+                ways[v] += ways[u];
+            }
+		}
+	}
+}
+
+int main(){
+	// freopen("test.inp", "r", stdin);
+	// freopen("test.out", "w", stdout);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin >> N >> M;
+    for(long long i=1; i<=M; ++i){
+        long long K, U, V, L;
+        cin >> K >> U >> V >> L;
+        adj[U].push_back({V, L});
+        if(K == 2){
+            adj[V].push_back({U, L});
+        }
+    }
+    dijkstra(1);
+    cout << dist[N] << " " << ways[N] << endl;
+	return 0;
+}
